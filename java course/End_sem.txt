@@ -1,0 +1,213 @@
+import java.net.*;  
+import java.util.Scanner;
+import java.util.*;
+import java.io.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class B extends JFrame implements ActionListener
+{
+        String s;
+	JMenu menu,menu2;
+	JMenuItem a1,a2, a3,a4,a5;
+	JPanel p1, p2;
+	JTextArea ta;
+	JTextField tf1,tf2,tf3,tf4;
+	JLabel l1,l2,l3,l4;
+        JButton b1,b2;
+	Button()
+	{
+		super("Student Record");
+		
+                menu = new JMenu("Admin");
+                JMenuBar m1 = new JMenuBar();
+		a1 = new JMenuItem("Add details");
+		a2 = new JMenuItem("Delete details");
+		a3 = new JMenuItem("Modify details");
+		menu.add(a1); menu.add(a2); menu.add(a3); m1.add(menu); 
+		setJMenuBar(m1);
+                 
+		a1.addActionListener(this);
+		a2.addActionListener(this);
+		a3.addActionListener(this);
+
+                menu2 = new JMenu("User");
+		a4 = new JMenuItem("View Details by Roll number");
+		a5 = new JMenuItem("View Details by Name");
+		menu2.add(a4); menu2.add(a5); m1.add(menu2); 
+		setJMenuBar(m1);
+                 
+		a4.addActionListener(this);
+		a5.addActionListener(this);
+
+		
+		
+		setSize(400,400);
+		setLocation(200,200);
+		setLayout(null);
+		setVisible(true);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+	}
+	public void actionPerformed(ActionEvent ae)
+	{
+                 String s1=ae.getActionCommand();
+                
+                       l1 = new JLabel("Enter Name ");
+		       l1.setSize(150,20);
+		       l1.setLocation(30,50);
+		       
+		       tf1 = new JTextField();
+		       tf1.setSize(150,20);
+		       tf1.setLocation(120,50);
+                       
+                    
+                       l2= new JLabel("Enter Roll No");
+		       l2.setSize(150,20);
+		       l2.setLocation(30,80);
+		       
+		       tf2 = new JTextField();
+		       tf2.setSize(150,20);
+		       tf2.setLocation(120,80);
+                     
+                       l3= new JLabel("Enter Age");
+		       l3.setSize(150,20);
+		       l3.setLocation(30,110);
+		     
+		       tf3 = new JTextField();
+		       tf3.setSize(150,20);
+		       tf3.setLocation(120,110);
+                      
+                       l4= new JLabel("Enter CPI");
+		       l4.setSize(150,20);
+		       l4.setLocation(30,140);
+		      
+		       tf4 = new JTextField();
+		       tf4.setSize(150,20);
+		       tf4.setLocation(120,140);
+                       if(s1=="Add details")
+                   {
+                        add(l1);
+                        add(tf1);
+                        add(l2);
+                        add(tf2);
+                        add(l3);
+                        add(tf3);
+                        add(l4);
+                        add(tf4);
+                      String a=tf1.getText();
+                      String b=tf2.getText();
+                      String c=tf3.getText();
+                      String d=tf4.getText(); 
+                   
+                     Student y1 = new Student(a,c,d,b);
+                      try {
+         FileOutputStream file = new FileOutputStream("D:\\oppo\\Sem 3\\CS 202 IT Workshop\\Class programs\\Student.ser");
+         
+         ObjectOutputStream out = new ObjectOutputStream(file);
+         
+         out.writeObject(y1);
+         out.close();
+         file.close();
+        } 
+           catch (IOException i) {
+               i.printStackTrace();
+                  }
+          }
+               if(s1=="Delete details")
+                   {
+                        add(l1);
+                        add(tf1);
+                        add(l2);
+                        add(tf2);
+                      String a=tf1.getText();
+                      String b=tf2.getText(); 
+                   
+                      try {
+         FileInputStream fileIn = new FileInputStream("D:\\oppo\\Sem 3\\CS 202 IT Workshop\\Class programs\\Student.ser");
+         ObjectInputStream in = new ObjectInputStream(fileIn);
+
+            while (true) {
+    		 
+    		  Student s = (Student) in.readObject(); 
+                     if(s.name==a && s.rollno==b)
+                       {//s.remove();
+                          break;
+                        }
+    	  }
+         in.close();
+         fileIn.close();
+        } 
+           catch (IOException i) {
+               i.printStackTrace();
+                  }
+           catch (ClassNotFoundException c) {
+         System.out.println("Student class not found");
+         c.printStackTrace();
+      }
+          } 
+        Client o= new Client("Student.ser");
+}
+        public static void main(String[] args) 
+	{
+		new B();
+	}
+}
+class Student implements Serializable{
+  String name;
+  String age;
+  String cpi;
+  String rollno;
+  
+  Student()
+  {
+	  
+  }
+  Student(String n,String a,String c,String r)
+  {
+	  name=n;
+	  age=a;
+          cpi=c;
+	  rollno=r;
+  }
+}
+class Client 
+{
+        Client()
+       {
+
+        }
+	Client(String s)
+	{  
+		try{
+		Socket socket = new Socket("localhost",3000);  
+		
+		System.out.println("Connected to server... ");
+		
+		DataInputStream input=new DataInputStream(socket.getInputStream());  
+		DataOutputStream output=new DataOutputStream(socket.getOutputStream());
+		
+		BufferedReader br=new BufferedReader(new InputStreamReader(System.in));  
+		
+	
+		String s1,s2; 
+                 s1="";
+		System.out.println("Sended updated file \n Write stop to finish");
+		
+		while(!s1.equals("stop"))
+		{  
+			System.out.println("Sended updated file name successfully \n Write stop to finish");
+                         s1=s;
+			output.writeUTF(s1);  
+			output.flush();  
+			s2=input.readUTF();  
+                         s1=br.readLine();
+		}  
+		output.close();  
+		socket.close();
+            }
+             catch (IOException c) {
+         System.out.println("Connection Denied !!");
+           }
+	}
+}   
